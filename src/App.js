@@ -7,15 +7,16 @@ class App extends Component {
         handle: null,
         tag: null,
     }
-    addQueri = (e) =>{
+    addQuery = (e) =>{
     	this.setState(e);
     }
     
   render(){
     return (
       <div className="App">
-      <Form getQueri = {this.addQueri}/>
-      <Background queri = {this.state} />
+      <Form getQuery = {this.addQuery}/>
+      <br/>
+      <Background query = {this.state} />
       </div>
     );
   }

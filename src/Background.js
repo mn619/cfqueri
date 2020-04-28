@@ -4,14 +4,15 @@ class Background extends Component{
 constructor(){
     super();
     this.state = {
+        query: [],
         problems: [],
     };
 }
 
 
 componentDidUpdate(prevProps){
-    var handle = this.props.queri.handle;
-    var tag = this.props.queri.tag;
+    var handle = this.props.query.handle;
+    var tag = this.props.query.tag;
 
     var apiAddress = 'https://codeforces.com/api/user.status?handle=' + handle; 
 	
@@ -21,17 +22,26 @@ componentDidUpdate(prevProps){
     }).then(data => {
         // console.log(data.result);
         let problems = data.result.map((problem) => {
-            var problemId = problem['problem']['contestId'] !== undefined? problem['problem']['contestId'].toString(): 0;
+            var contestId = problem['problem']['contestId'] !== undefined? problem['problem']['contestId'].toString(): 0
+            var problemId = problem['problem']['contestId'] !== undefined? problem['problem']['contestId'].toString() + problem['problem']['index'].toString(): 0;
             var problemName = problem['problem']['name'];
             var problemIndex = problem['problem']['index'].toString();
             var problemRating = problem['problem']['rating'] !== undefined? problem['problem']['rating'].toString(): -1;
 
-            var link = 'http://codeforces.com/problemset/problem/' + problemId + "/" + problemIndex;
+            var link = 'http://codeforces.com/problemset/problem/' + contestId + "/" + problemIndex;
             if(problem['verdict'] === 'OK' && ('tags' in problem['problem']) && (problem['problem']['tags'].includes(tag)))
             return(
-                <div key = {problem.id}>
-                    <a href = {link}>{problemName} </a>
-                    <div> {problemRating} {problemId}</div>
+                <div key = {problem.id} className = "list-group">
+                    <ul className ="list-group list-group-horizontal">
+                      <a href = {link}  style={{width:"50%"}}>
+                          <li className ="list-group-item">
+                            {problemId} {problemName}
+                          </li>
+                      </a>
+                      <li className ="list-group-item" style={{width:"80px"}}>
+                        {problemRating}
+                      </li>
+                    </ul>
                 </div>
             )
             else return null;
@@ -43,15 +53,19 @@ componentDidUpdate(prevProps){
         });
         
         //if the query change, we update current state
-        if(prevProps.queri !== this.props.queri)
+        if(prevProps.query !== this.props.query)
+        this.setState({query: this.props.query})
         this.setState({problems: problems});
     })
 }
 
 render() {
     return (
-        <div className="container2">
-            <div className="container1">
+        <div className="container1">
+            <div class="alert alert-dark" role="alert">
+              Handle : {this.state.query.handle} ProblemTag : {this.state.query.tag}
+            </div>
+            <div className="container3">
                 {this.state.problems}
             </div>
         </div>
@@ -59,4 +73,3 @@ render() {
 }
 }
 export default Background;
-
