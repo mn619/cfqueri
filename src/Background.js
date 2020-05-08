@@ -21,6 +21,7 @@ componentDidUpdate(prevProps){
         return results.json();
     }).then(data => {
         // console.log(data.result);
+        
         let problems = data.result.map((problem) => {
             var contestId = problem['problem']['contestId'] !== undefined? problem['problem']['contestId'].toString(): 0
             var problemId = problem['problem']['contestId'] !== undefined? problem['problem']['contestId'].toString() + problem['problem']['index'].toString(): 0;
