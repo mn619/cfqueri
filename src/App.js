@@ -13,7 +13,30 @@ class App extends Component {
         },
         problems: []
     }
-
+	getHandleColor(HandleRank){
+		if(HandleRank === undefined)
+	  		return '#000000';
+	  	if(HandleRank === 'newbie')
+	  		return '#CCCCCC';
+	  	if(HandleRank === 'pupil')
+	  		return '#77FF77';
+	  	if(HandleRank === 'specialist')
+	  		return '#77DDBB';
+	  	if(HandleRank === 'expert')
+	  		return '#AAAAFF';
+	  	if(HandleRank === 'candidate master')
+	  		return '#FF88FF';
+	  	if(HandleRank === 'master')
+	  		return '#FFCC88';	
+	  	if(HandleRank === 'international master')
+	  		return '#FFBB55';
+		if(HandleRank === 'grandmaster')
+	  		return '#FF7777';
+	  	if(HandleRank === 'international grandmaster')
+	  		return '#FF3333';	
+		if(HandleRank === 'legendary grandmaster')
+	  		return '#AA0000';	
+	}
     getUnique(inputProblems){
     	var result = [];
     	for(var i = 0; i < inputProblems.length; i++){
@@ -29,7 +52,8 @@ class App extends Component {
     }
     addQuery = (e) =>{
     	this.setState({query: e, problems: []});
-    	var handle = e.handle;
+    	var handle = e.handle.toLowerCase();
+    	e.tag = e.tag.toLowerCase();
     	var apiAddress = 'https://codeforces.com/api/user.status?handle=' + handle;
 
 		var ratingLow = (e.ratingLow === '')? -1: Number(e.ratingLow); 
@@ -38,6 +62,13 @@ class App extends Component {
     	e.ratingLow = ratingLow;
     	e.ratingHigh = ratingHigh;
     	
+	  	fetch('https://codeforces.com/api/user.info?handles=' + handle)
+		   .then(result =>{
+		   		return result.json();
+		   })
+		   .then(result => {
+		   		e.HandleColor = this.getHandleColor(result['result'][0]['rank']);
+		   });
     	const t0 = performance.now();
 		trackPromise(
 			fetch(apiAddress)
@@ -51,7 +82,6 @@ class App extends Component {
 					var problemName = problem['problem']['name'];
 					var problemIndex = problem['problem']['index'].toString();
 					var problemRating = problem['problem']['rating'] !== undefined? problem['problem']['rating'].toString():"-1";
-					//console.log(Number(problemRating));
 					var submissionUnixTime = problem['creationTimeSeconds'];
 					var link = 'http://codeforces.com/problemset/problem/' + contestId + "/" + problemIndex;
 					var problemTags = problem['problem']['tags'];
